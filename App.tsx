@@ -1,102 +1,82 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
+  Button,
+  Image,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
+  FlatList,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import * as ImagePicker from 'expo-image-picker';
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [selectedImages, setSelectedImages] = useState<ImagePicker.ImageInfo[] | null>(null);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const onPressRequestImageGalleryAccess = async () => {
+    const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    console.log(result);
+  };
+
+  const onPressSelectImages = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: false,
+      aspect: [1, 1],
+      quality: 1,
+      allowsMultipleSelection: true,
+    });
+
+    if (!result.cancelled) {
+      const images: ImagePicker.ImageInfo[] = result.selected;
+      console.log(images)
+      setSelectedImages(images);
+    }
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.appText}>
+        Trade Hound Assessment
+      </Text>
+
+      <View>
+        <Text>
+          Selection Results
+        </Text>
+      </View>
+
+      <FlatList
+        data={selectedImages}
+        horizontal={true}
+        contentContainerStyle={{ padding: 8 }}
+        renderItem={({ item }) => (
+          <View>
+            <Image
+              source={{ uri: item.uri }}
+              resizeMode="cover"
+              style={{ height: 100, width: 100 }}
+            />
+          </View>
+        )}
+        ItemSeparatorComponent={() => <View style={{ padding: 8 }}/>}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+
+      <Button title="Request Image Gallery Access"  onPress={onPressRequestImageGalleryAccess}/>
+      <Button title="Select Multiple Images" onPress={onPressSelectImages}/>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  appText: {
+    textAlign: 'center',
+  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
