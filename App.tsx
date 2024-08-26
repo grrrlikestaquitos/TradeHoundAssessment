@@ -36,6 +36,14 @@ function App(): React.JSX.Element {
     }
   };
 
+  // Views
+
+  const ItemSeparatorComponent = () => {
+    return (
+      <View style={styles.itemSeparator}/>
+    )
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.appText}>
@@ -51,20 +59,19 @@ function App(): React.JSX.Element {
       <FlatList
         data={selectedImages}
         horizontal={true}
-        contentContainerStyle={{ padding: 8 }}
+        contentContainerStyle={styles.flatListContainer}
         renderItem={({ item }) => (
           <View>
             <Image
               source={{ uri: item.uri }}
               resizeMode="cover"
-              style={{ height: 100, width: 100 }}
+              style={styles.image}
             />
           </View>
         )}
-        ItemSeparatorComponent={() => <View style={{ padding: 8 }}/>}
+        ItemSeparatorComponent={ItemSeparatorComponent}
       />
 
-      <Button title="Request Image Gallery Access"  onPress={onPressRequestImageGalleryAccess}/>
       <Button title="Select Multiple Images" onPress={onPressSelectImages}/>
     </SafeAreaView>
   );
@@ -77,21 +84,15 @@ const styles = StyleSheet.create({
   appText: {
     textAlign: 'center',
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  itemSeparator: {
+    padding: 8,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  image: {
+    height: 100,
+    width: 100,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  flatListContainer: {
+    padding: 8,
   },
 });
 
