@@ -8,17 +8,33 @@ import {
   StyleSheet,
   Text,
   View,
+  ListRenderItemInfo,
 } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 
+// Views
+
+const ItemSeparatorComponent = () => {
+  return (
+    <View style={styles.itemSeparator} />
+  );
+};
+
+const FlatListItemImage = ({ item }: ListRenderItemInfo<ImagePicker.ImageInfo>) => {
+  return (
+    <View>
+      <Image
+        source={{ uri: item.uri }}
+        resizeMode="cover"
+        style={styles.image}
+      />
+    </View>
+  )
+}
+
 function App(): React.JSX.Element {
   const [selectedImages, setSelectedImages] = useState<ImagePicker.ImageInfo[] | null>(null);
-
-  const onPressRequestImageGalleryAccess = async () => {
-    const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    console.log(result);
-  };
 
   const onPressSelectImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -31,48 +47,28 @@ function App(): React.JSX.Element {
 
     if (!result.cancelled) {
       const images: ImagePicker.ImageInfo[] = result.selected;
-      console.log(images)
       setSelectedImages(images);
+
+      console.log(images);
     }
-  };
-
-  // Views
-
-  const ItemSeparatorComponent = () => {
-    return (
-      <View style={styles.itemSeparator}/>
-    )
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.appText}>
-        Trade Hound Assessment
-      </Text>
 
-      <View>
-        <Text>
-          Selection Results
-        </Text>
-      </View>
+      <Text style={styles.header}>
+        Selection Results
+      </Text>
 
       <FlatList
         data={selectedImages}
         horizontal={true}
         contentContainerStyle={styles.flatListContainer}
-        renderItem={({ item }) => (
-          <View>
-            <Image
-              source={{ uri: item.uri }}
-              resizeMode="cover"
-              style={styles.image}
-            />
-          </View>
-        )}
+        renderItem={FlatListItemImage}
         ItemSeparatorComponent={ItemSeparatorComponent}
       />
 
-      <Button title="Select Multiple Images" onPress={onPressSelectImages}/>
+      <Button title="Select Multiple Images" onPress={onPressSelectImages} />
     </SafeAreaView>
   );
 }
@@ -81,8 +77,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  appText: {
-    textAlign: 'center',
+  header: {
+    fontWeight: 'bold',
+    fontSize: 24,
+    paddingHorizontal: 16,
   },
   itemSeparator: {
     padding: 8,
@@ -90,9 +88,11 @@ const styles = StyleSheet.create({
   image: {
     height: 100,
     width: 100,
+    borderRadius: 8,
   },
   flatListContainer: {
-    padding: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
 });
 
