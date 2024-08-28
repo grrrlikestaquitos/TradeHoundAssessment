@@ -66,6 +66,7 @@ function App(): React.JSX.Element {
         contentContainerStyle={styles.flatListContainer}
         renderItem={FlatListItemImage}
         ItemSeparatorComponent={ItemSeparatorComponent}
+        keyExtractor={(item) => item.fileName || ''}
       />
 
       <Button title="Select Multiple Images" onPress={onPressSelectImages} />
